@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Management System v6.0 - University Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            background: var(--primary-gradient);
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .main-wrapper {
+            padding: 2rem 0;
+            min-height: 100vh;
+        }
+
+        /* Enhanced Card Styles */
+        .system-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .system-card:hover {
+            box-shadow: var(--hover-shadow);
+            transform: translateY(-5px);
+        }
+
+        /* Header Enhancements */
+        .system-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .system-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .version-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Enhanced Controls */
+        .controls-section {
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1rem 1rem 1rem 3.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-pill {
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #6b7280;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-pill:hover, .filter-pill.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .bulk-controls {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Enhanced Event Folders */
+        .event-folder {
+            background: white;
+            border: 2px solid #f1f5f9;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .event-folder:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .event-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .event-header:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        }
+
+        .event-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary-gradient);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .event-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        .event-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Enhanced Progress Circles */
+        .progress-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(#e5e7eb 0deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .progress-circle::before {
+            content: '';
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* Enhanced Document Items */
+        .document-item {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .document-item:hover {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            transform: translateX(8px);
+        }
+
+        .document-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .document-icon.pdf {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+        }
+
+        .document-icon.doc {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #2563eb;
+        }
+
+        .document-icon.img {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #059669;
+        }
+
+        .document-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .document-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+
+        /* Enhanced Status Badges */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .status-in-progress {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+        }
+
+        .status-office {
+            background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+            color: #0277bd;
+        }
+
+        /* Enhanced Action Buttons */
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn.view {
+            background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+            color: #0277bd;
+        }
+
+        .action-btn.download {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            color: #7c3aed;
+        }
+
+        .action-btn.track {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            color: #059669;
+        }
+
+        /* Enhanced Buttons */
+        .btn-enhanced {
+            border-radius: 12px;
+            padding: 0.875rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-enhanced:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary-enhanced {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary-enhanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline-enhanced {
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline-enhanced:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Selection Summary Enhancement */
+        .selection-summary {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 2px solid #667eea;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            display: none;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .selection-summary.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tracker Interface Enhancements */
+        .tracker-section {
+            padding: 2rem;
+        }
+
+        .overall-progress-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .large-progress-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(#e5e7eb 0deg 360deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+
+        .large-progress-circle::before {
+            content: '';
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .large-progress-text {
+            position: relative;
+            z-index: 1;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        /* Office Progress Grid */
+        .office-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 2px solid #f1f5f9;
+        }
+
+        .office-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+
+        /* Responsive Enhancements */
+        @media (max-width: 768px) {
+            .system-header {
+                padding: 2rem 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .controls-section {
+                padding: 1.5rem;
+            }
+
+            .bulk-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .event-header {
+                padding: 1.5rem;
+            }
+
+            .document-item {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .document-meta {
+                justify-content: center;
+            }
+        }
+
+        /* Loading States */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #f3f4f6;
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="container-fluid">
+            <!-- Document Management Interface -->
+            <div class="system-card" id="management-interface">
+                <!-- Enhanced Header -->
+                <div class="system-header">
+                    <div class="header-content">
+                        <div class="version-badge">
+                            <i class="bi bi-star-fill me-2"></i>Version 6.0
+                        </div>
+                        <div class="row align-items-center">
+                            <div class="col-lg-8">
+                                <h1 class="display-6 fw-bold mb-3">
+                                    <i class="bi bi-folder2-open me-3"></i>
+                                    Document Management System
+                                </h1>
+                                <p class="lead mb-0 opacity-90">
+                                    Advanced tracking and management for university document workflows
+                                </p>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <span class="stat-number">24</span>
+                                        <span class="stat-label">Total Docs</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-number">8</span>
+                                        <span class="stat-label">In Progress</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-number">12</span>
+                                        <span class="stat-label">Completed</span>
+                                    </div>
+                                    <div class="stat-card">
+                                        <span class="stat-number">4</span>
+                                        <span class="stat-label">Pending</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Controls -->
+                <div class="controls-section">
+                    <!-- Search -->
+                    <div class="search-container">
+                        <i class="bi bi-search search-icon"></i>
+                        <input type="text" class="form-control search-input" placeholder="Search documents, events, or status..." id="search-input">
+                    </div>
+
+                    <!-- Filter Pills -->
+                    <div class="filter-pills">
+                        <button class="filter-pill active" data-filter="all">
+                            <i class="bi bi-grid me-2"></i>All Documents
+                        </button>
+                        <button class="filter-pill" data-filter="pending">
+                            <i class="bi bi-clock me-2"></i>Pending
+                        </button>
+                        <button class="filter-pill" data-filter="in-progress">
+                            <i class="bi bi-arrow-repeat me-2"></i>In Progress
+                        </button>
+                        <button class="filter-pill" data-filter="completed">
+                            <i class="bi bi-check-circle me-2"></i>Completed
+                        </button>
+                    </div>
+
+                    <!-- Bulk Controls -->
+                    <div class="bulk-controls">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="select-all">
+                                <label class="form-check-label fw-semibold" for="select-all">
+                                    Select All Documents
+                                </label>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-enhanced btn-primary-enhanced" id="track-selected-btn" disabled>
+                                <i class="bi bi-graph-up me-2"></i>Track Selected
+                            </button>
+                            <button class="btn btn-enhanced btn-outline-enhanced" id="bulk-download-btn" disabled>
+                                <i class="bi bi-download me-2"></i>Download All
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Selection Summary -->
+                    <div class="selection-summary" id="selection-summary">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong id="selected-count">0</strong> documents selected from 
+                                <strong id="selected-events">0</strong> events
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary" id="clear-selection">
+                                <i class="bi bi-x-circle me-1"></i>Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Documents Section -->
+                <div class="tracker-section">
+                    <!-- Event Folder 1: Annual Budget Planning 2024 -->
+                    <div class="event-folder" data-event="budget-planning">
+                        <div class="event-header" onclick="toggleEventFolder(this)">
+                            <div class="row align-items-center">
+                                <div class="col-lg-8">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="event-icon">
+                                            <i class="bi bi-calculator"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="event-title">Annual Budget Planning 2024</h5>
+                                            <div class="event-meta">
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-file-earmark"></i>
+                                                    <span>4 documents</span>
+                                                </div>
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-calendar"></i>
+                                                    <span>March 15, 2024</span>
+                                                </div>
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-person"></i>
+                                                    <span>Finance Committee</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input event-checkbox" type="checkbox" data-event="budget-planning">
+                                            <label class="form-check-label fw-semibold">Select All</label>
+                                        </div>
+                                        <div class="progress-circle" data-event-progress="budget-planning">
+                                            <div class="progress-text">0%</div>
+                                        </div>
+                                        <button class="btn btn-link p-0 expand-btn">
+                                            <i class="bi bi-chevron-down fs-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="documents-list">
+                            <div class="document-item" data-status="in-progress" data-office="5" data-office-name="Student Affairs Office">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-001" data-event="budget-planning">
+                                <div class="document-icon pdf">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Annual Budget Proposal 2024.pdf</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>2.4 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 15, 2024</span>
+                                        <span><i class="bi bi-graph-up me-1"></i>Progress: 5/10 offices (50%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-office">At Student Affairs Office</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="Track Progress">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="document-item" data-status="completed">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-002" data-event="budget-planning">
+                                <div class="document-icon doc">
+                                    <i class="bi bi-file-earmark-word"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Financial Report Q1 2024.docx</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>1.8 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 15, 2024</span>
+                                        <span><i class="bi bi-check-circle me-1"></i>Completed (100%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-completed">Completed</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="View History">
+                                            <i class="bi bi-clock-history"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="document-item" data-status="pending" data-office="1" data-office-name="College Student Council">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-003" data-event="budget-planning">
+                                <div class="document-icon pdf">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Budget Allocation Breakdown.pdf</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>3.2 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 15, 2024</span>
+                                        <span><i class="bi bi-clock me-1"></i>Progress: 1/10 offices (10%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-office">At College Student Council</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="Track Progress">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="document-item" data-status="in-progress" data-office="3" data-office-name="Dean's Office">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-004" data-event="budget-planning">
+                                <div class="document-icon img">
+                                    <i class="bi bi-file-earmark-image"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Budget Presentation Slides.jpg</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>5.1 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 15, 2024</span>
+                                        <span><i class="bi bi-arrow-repeat me-1"></i>Progress: 3/10 offices (30%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-office">At Dean's Office</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="Track Progress">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Folder 2: Student Activities Week -->
+                    <div class="event-folder" data-event="activities-week">
+                        <div class="event-header" onclick="toggleEventFolder(this)">
+                            <div class="row align-items-center">
+                                <div class="col-lg-8">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="event-icon">
+                                            <i class="bi bi-calendar-event"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="event-title">Student Activities Week 2024</h5>
+                                            <div class="event-meta">
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-file-earmark"></i>
+                                                    <span>3 documents</span>
+                                                </div>
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-calendar"></i>
+                                                    <span>March 18, 2024</span>
+                                                </div>
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-person"></i>
+                                                    <span>Activities Committee</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input event-checkbox" type="checkbox" data-event="activities-week">
+                                            <label class="form-check-label fw-semibold">Select All</label>
+                                        </div>
+                                        <div class="progress-circle" data-event-progress="activities-week">
+                                            <div class="progress-text">0%</div>
+                                        </div>
+                                        <button class="btn btn-link p-0 expand-btn">
+                                            <i class="bi bi-chevron-down fs-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="documents-list">
+                            <div class="document-item" data-status="in-progress" data-office="2" data-office-name="Department Student Council">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-005" data-event="activities-week">
+                                <div class="document-icon doc">
+                                    <i class="bi bi-file-earmark-word"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Activities Schedule & Logistics.docx</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>2.1 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 18, 2024</span>
+                                        <span><i class="bi bi-arrow-repeat me-1"></i>Progress: 2/10 offices (20%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-office">At Department Student Council</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="Track Progress">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="document-item" data-status="pending" data-office="1" data-office-name="College Student Council">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-006" data-event="activities-week">
+                                <div class="document-icon pdf">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Venue Booking Request.pdf</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>1.5 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 18, 2024</span>
+                                        <span><i class="bi bi-clock me-1"></i>Progress: 1/10 offices (10%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-office">At College Student Council</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="Track Progress">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="document-item" data-status="pending" data-office="1" data-office-name="College Student Council">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-007" data-event="activities-week">
+                                <div class="document-icon img">
+                                    <i class="bi bi-file-earmark-image"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Event Promotional Materials.png</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>4.3 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 18, 2024</span>
+                                        <span><i class="bi bi-clock me-1"></i>Progress: 1/10 offices (10%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-office">At College Student Council</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="Track Progress">
+                                            <i class="bi bi-graph-up"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Folder 3: Scholarship Applications -->
+                    <div class="event-folder" data-event="scholarship">
+                        <div class="event-header" onclick="toggleEventFolder(this)">
+                            <div class="row align-items-center">
+                                <div class="col-lg-8">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="event-icon">
+                                            <i class="bi bi-mortarboard"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="event-title">Scholarship Application Review</h5>
+                                            <div class="event-meta">
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-file-earmark"></i>
+                                                    <span>2 documents</span>
+                                                </div>
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-calendar"></i>
+                                                    <span>March 20, 2024</span>
+                                                </div>
+                                                <div class="event-meta-item">
+                                                    <i class="bi bi-person"></i>
+                                                    <span>Academic Committee</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input event-checkbox" type="checkbox" data-event="scholarship">
+                                            <label class="form-check-label fw-semibold">Select All</label>
+                                        </div>
+                                        <div class="progress-circle" data-event-progress="scholarship">
+                                            <div class="progress-text">0%</div>
+                                        </div>
+                                        <button class="btn btn-link p-0 expand-btn">
+                                            <i class="bi bi-chevron-down fs-4"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="documents-list">
+                            <div class="document-item" data-status="completed">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-008" data-event="scholarship">
+                                <div class="document-icon pdf">
+                                    <i class="bi bi-file-earmark-pdf"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Scholarship Criteria Guidelines.pdf</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>1.2 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 20, 2024</span>
+                                        <span><i class="bi bi-check-circle me-1"></i>Completed (100%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-completed">Completed</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="View History">
+                                            <i class="bi bi-clock-history"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="document-item" data-status="completed">
+                                <input class="form-check-input document-checkbox" type="checkbox" data-doc="doc-009" data-event="scholarship">
+                                <div class="document-icon doc">
+                                    <i class="bi bi-file-earmark-word"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="document-name">Application Review Process.docx</div>
+                                    <div class="document-meta">
+                                        <span><i class="bi bi-hdd me-1"></i>0.9 MB</span>
+                                        <span><i class="bi bi-calendar me-1"></i>Mar 20, 2024</span>
+                                        <span><i class="bi bi-check-circle me-1"></i>Completed (100%)</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="status-badge status-completed">Completed</div>
+                                    <div class="d-flex gap-2">
+                                        <button class="action-btn view" title="View Document">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="action-btn download" title="Download">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="action-btn track" title="View History">
+                                            <i class="bi bi-clock-history"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enhanced Tracker Interface -->
+            <div class="system-card" id="tracker-interface" style="display: none;">
+                <!-- Tracker Header -->
+                <div class="system-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="display-6 fw-bold mb-2">
+                                <i class="bi bi-graph-up me-3"></i>
+                                Document Tracking Dashboard
+                            </h1>
+                            <p class="lead mb-0 opacity-90">
+                                Monitoring progress for <span id="tracking-count" class="fw-bold">0</span> selected documents
+                            </p>
+                        </div>
+                        <button type="button" class="btn btn-enhanced btn-outline-enhanced" id="back-to-management">
+                            <i class="bi bi-arrow-left me-2"></i>Back to Documents
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Overall Progress -->
+                <div class="tracker-section">
+                    <div class="overall-progress-card">
+                        <div class="large-progress-circle" id="tracker-progress-circle">
+                            <div class="large-progress-text" id="tracker-progress-text">0%</div>
+                        </div>
+                        <h4 class="fw-bold mb-2">Overall Progress</h4>
+                        <p class="text-muted mb-0" id="tracker-progress-desc">0 of 0 documents completed</p>
+                    </div>
+
+                    <!-- Documents Being Tracked -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="system-card mb-4">
+                                <div class="p-4">
+                                    <h5 class="fw-bold mb-3">
+                                        <i class="bi bi-list-check me-2"></i>Documents Being Tracked
+                                    </h5>
+                                    <div id="tracking-documents-list">
+                                        <!-- Dynamic content will be inserted here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Office Progress Grid -->
+                    <div class="system-card mb-4">
+                        <div class="p-4">
+                            <h5 class="fw-bold mb-4 text-center">
+                                <i class="bi bi-building me-2"></i>Signatory Workflow Progress
+                            </h5>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                This shows the collective progress of all selected documents through the signatory workflow.
+                                Individual document progress may vary.
+                            </div>
+                            <div class="row g-3" id="office-progress-grid">
+                                <!-- Dynamic content will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center">
+                        <div class="d-flex gap-3 justify-content-center flex-wrap">
+                            <button type="button" class="btn btn-enhanced btn-primary-enhanced" id="refresh-tracking-btn">
+                                <i class="bi bi-arrow-clockwise me-2"></i>Refresh All Status
+                            </button>
+                            <button type="button" class="btn btn-enhanced btn-outline-enhanced" id="export-tracking-btn">
+                                <i class="bi bi-download me-2"></i>Export Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        class DocumentManagerV6 {
+            constructor() {
+                this.selectedDocuments = new Set();
+                this.selectedEvents = new Set();
+                this.officeNames = [
+                    'College Student Council',
+                    'Department Student Council', 
+                    'Dean\'s Office',
+                    'Supreme Student Council',
+                    'Student Affairs Office',
+                    'Finance Office',
+                    'Vice President Office',
+                    'President Office',
+                    'Accounting Office',
+                    'Final Approval'
+                ];
+                this.initializeEventListeners();
+                this.calculateInitialProgress();
+                this.addEnhancedAnimations();
+            }
+
+            calculateInitialProgress() {
+                const eventFolders = document.querySelectorAll('.event-folder');
+                eventFolders.forEach(folder => {
+                    this.updateEventProgress(folder);
+                });
+            }
+
+            updateEventProgress(eventFolder) {
+                const eventId = eventFolder.dataset.event;
+                const documents = eventFolder.querySelectorAll('.document-item');
+                const progressCircle = eventFolder.querySelector(`[data-event-progress="${eventId}"]`);
+                const progressText = progressCircle.querySelector('.progress-text');
+                
+                let totalProgress = 0;
+                let docCount = 0;
+                
+                documents.forEach(doc => {
+                    const status = doc.dataset.status;
+                    const office = parseInt(doc.dataset.office) || 0;
+                    
+                    if (status === 'completed') {
+                        totalProgress += 100;
+                    } else {
+                        totalProgress += (office / 10) * 100;
+                    }
+                    docCount++;
+                });
+                
+                const avgProgress = docCount > 0 ? Math.round(totalProgress / docCount) : 0;
+                const degrees = (avgProgress / 100) * 360;
+                
+                progressCircle.style.background = `conic-gradient(#10b981 0deg ${degrees}deg, #e5e7eb ${degrees}deg 360deg)`;
+                progressText.textContent = `${avgProgress}%`;
+            }
+
+            calculateOfficeProgress(selectedDocs) {
+                const officeProgress = new Array(10).fill(0);
+                
+                selectedDocs.forEach(docId => {
+                    const docElement = document.querySelector(`[data-doc="${docId}"]`).closest('.document-item');
+                    const status = docElement.dataset.status;
+                    const office = parseInt(docElement.dataset.office) || 0;
+                    
+                    if (status === 'completed') {
+                        for (let i = 0; i < 10; i++) {
+                            officeProgress[i]++;
+                        }
+                    } else if (office > 0) {
+                        for (let i = 0; i < office; i++) {
+                            officeProgress[i]++;
+                        }
+                    }
+                });
+                
+                return officeProgress.map(count => Math.round((count / selectedDocs.size) * 100));
+            }
+
+            addEnhancedAnimations() {
+                // Add stagger animation to document items
+                const documentItems = document.querySelectorAll('.document-item');
+                documentItems.forEach((item, index) => {
+                    item.style.animationDelay = `${index * 0.1}s`;
+                });
+
+                // Add hover effects to cards
+                const cards = document.querySelectorAll('.system-card, .event-folder');
+                cards.forEach(card => {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px)';
+                    });
+                    
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                    });
+                });
+            }
+
+            initializeEventListeners() {
+                // Search functionality
+                document.getElementById('search-input').addEventListener('input', (e) => this.handleSearch(e.target.value));
+                
+                // Filter buttons
+                document.querySelectorAll('.filter-pill').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.handleFilter(e.target.dataset.filter));
+                });
+
+                // Select all checkbox
+                document.getElementById('select-all').addEventListener('change', (e) => this.handleSelectAll(e.target.checked));
+
+                // Event checkboxes
+                document.querySelectorAll('.event-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => this.handleEventSelection(e.target));
+                });
+
+                // Document checkboxes
+                document.querySelectorAll('.document-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => this.handleDocumentSelection(e.target));
+                });
+
+                // Action buttons
+                document.getElementById('track-selected-btn').addEventListener('click', () => this.trackSelectedDocuments());
+                document.getElementById('bulk-download-btn').addEventListener('click', () => this.downloadSelected());
+                document.getElementById('clear-selection').addEventListener('click', () => this.clearSelection());
+                document.getElementById('back-to-management').addEventListener('click', () => this.backToManagement());
+
+                // Tracker buttons
+                document.getElementById('refresh-tracking-btn').addEventListener('click', () => this.refreshTracking());
+                document.getElementById('export-tracking-btn').addEventListener('click', () => this.exportTrackingReport());
+
+                // Action button effects
+                document.querySelectorAll('.action-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => this.handleActionClick(e));
+                });
+            }
+
+            handleActionClick(e) {
+                e.stopPropagation();
+                const btn = e.currentTarget;
+                
+                // Add click animation
+                btn.style.transform = 'scale(0.9)';
+                setTimeout(() => {
+                    btn.style.transform = 'scale(1)';
+                }, 150);
+
+                // Determine action type
+                const action = btn.classList.contains('view') ? 'view' : 
+                              btn.classList.contains('download') ? 'download' : 'track';
+                
+                this.showToast(`${action.charAt(0).toUpperCase() + action.slice(1)} action triggered`, 'info');
+            }
+
+            handleSearch(query) {
+                const folders = document.querySelectorAll('.event-folder');
+                folders.forEach(folder => {
+                    const eventName = folder.querySelector('.event-title').textContent.toLowerCase();
+                    const documents = folder.querySelectorAll('.document-item');
+                    let folderVisible = false;
+
+                    documents.forEach(doc => {
+                        const docName = doc.querySelector('.document-name').textContent.toLowerCase();
+                        const visible = docName.includes(query.toLowerCase()) || eventName.includes(query.toLowerCase());
+                        doc.style.display = visible ? 'flex' : 'none';
+                        if (visible) folderVisible = true;
+                    });
+
+                    folder.style.display = folderVisible || query === '' ? 'block' : 'none';
+                });
+            }
+
+            handleFilter(filter) {
+                // Update active filter button
+                document.querySelectorAll('.filter-pill').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+
+                // Filter documents
+                const documents = document.querySelectorAll('.document-item');
+                documents.forEach(doc => {
+                    const status = doc.dataset.status;
+                    const visible = filter === 'all' || status === filter;
+                    doc.style.display = visible ? 'flex' : 'none';
+                });
+
+                // Hide empty folders
+                const folders = document.querySelectorAll('.event-folder');
+                folders.forEach(folder => {
+                    const visibleDocs = folder.querySelectorAll('.document-item[style*="flex"], .document-item:not([style])');
+                    folder.style.display = visibleDocs.length > 0 ? 'block' : 'none';
+                });
+            }
+
+            handleSelectAll(checked) {
+                const allCheckboxes = document.querySelectorAll('.document-checkbox, .event-checkbox');
+                allCheckboxes.forEach(checkbox => {
+                    checkbox.checked = checked;
+                    if (checkbox.classList.contains('document-checkbox')) {
+                        this.handleDocumentSelection(checkbox);
+                    } else {
+                        this.handleEventSelection(checkbox);
+                    }
+                });
+            }
+
+            handleEventSelection(checkbox) {
+                const eventId = checkbox.dataset.event;
+                const eventDocuments = document.querySelectorAll(`[data-event="${eventId}"] .document-checkbox`);
+                
+                eventDocuments.forEach(docCheckbox => {
+                    docCheckbox.checked = checkbox.checked;
+                    this.handleDocumentSelection(docCheckbox);
+                });
+            }
+
+            handleDocumentSelection(checkbox) {
+                const docId = checkbox.dataset.doc;
+                const eventId = checkbox.dataset.event;
+
+                if (checkbox.checked) {
+                    this.selectedDocuments.add(docId);
+                    this.selectedEvents.add(eventId);
+                } else {
+                    this.selectedDocuments.delete(docId);
+                    
+                    const eventDocs = document.querySelectorAll(`[data-event="${eventId}"] .document-checkbox:checked`);
+                    if (eventDocs.length === 0) {
+                        this.selectedEvents.delete(eventId);
+                    }
+                }
+
+                this.updateSelectionUI();
+            }
+
+            updateSelectionUI() {
+                const selectedCount = this.selectedDocuments.size;
+                const eventCount = this.selectedEvents.size;
+
+                document.getElementById('selected-count').textContent = selectedCount;
+                document.getElementById('selected-events').textContent = eventCount;
+                
+                const summary = document.getElementById('selection-summary');
+                const trackBtn = document.getElementById('track-selected-btn');
+                const downloadBtn = document.getElementById('bulk-download-btn');
+
+                if (selectedCount > 0) {
+                    summary.classList.add('active');
+                    trackBtn.disabled = false;
+                    downloadBtn.disabled = false;
+                } else {
+                    summary.classList.remove('active');
+                    trackBtn.disabled = true;
+                    downloadBtn.disabled = true;
+                }
+            }
+
+            clearSelection() {
+                this.selectedDocuments.clear();
+                this.selectedEvents.clear();
+                
+                document.querySelectorAll('.document-checkbox, .event-checkbox, #select-all').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                this.updateSelectionUI();
+                this.showToast('Selection cleared', 'info');
+            }
+
+            trackSelectedDocuments() {
+                if (this.selectedDocuments.size === 0) return;
+
+                // Add loading state
+                const trackBtn = document.getElementById('track-selected-btn');
+                trackBtn.classList.add('loading');
+                trackBtn.innerHTML = '<span class="spinner me-2"></span>Loading Tracker...';
+
+                setTimeout(() => {
+                    document.getElementById('management-interface').style.display = 'none';
+                    document.getElementById('tracker-interface').style.display = 'block';
+                    this.updateTrackerInterface();
+                    
+                    trackBtn.classList.remove('loading');
+                    trackBtn.innerHTML = '<i class="bi bi-graph-up me-2"></i>Track Selected';
+                }, 1000);
+            }
+
+            updateTrackerInterface() {
+                const trackingCount = document.getElementById('tracking-count');
+                const trackingList = document.getElementById('tracking-documents-list');
+                const progressText = document.getElementById('tracker-progress-text');
+                const progressDesc = document.getElementById('tracker-progress-desc');
+                const officeGrid = document.getElementById('office-progress-grid');
+
+                trackingCount.textContent = this.selectedDocuments.size;
+                trackingList.innerHTML = '';
+
+                let totalProgress = 0;
+                let completedDocs = 0;
+                
+                this.selectedDocuments.forEach(docId => {
+                    const docElement = document.querySelector(`[data-doc="${docId}"]`).closest('.document-item');
+                    const docName = docElement.querySelector('.document-name').textContent;
+                    const status = docElement.dataset.status;
+                    const eventName = docElement.closest('.event-folder').querySelector('.event-title').textContent;
+                    const office = parseInt(docElement.dataset.office) || 0;
+                    const officeName = docElement.dataset.officeName || 'Processing';
+                    
+                    let docProgress = 0;
+                    if (status === 'completed') {
+                        docProgress = 100;
+                        completedDocs++;
+                    } else {
+                        docProgress = (office / 10) * 100;
+                    }
+                    totalProgress += docProgress;
+                    
+                    const trackingDoc = document.createElement('div');
+                    trackingDoc.className = 'document-item border rounded-3 mb-3';
+                    trackingDoc.innerHTML = `
+                        <div class="document-icon ${docName.includes('.pdf') ? 'pdf' : docName.includes('.doc') ? 'doc' : 'img'}">
+                            <i class="bi bi-file-earmark-${docName.includes('.pdf') ? 'pdf' : docName.includes('.doc') ? 'word' : 'image'}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="document-name">${docName}</div>
+                            <div class="document-meta">
+                                <span><i class="bi bi-folder me-1"></i>Event: ${eventName}</span>
+                                <span><i class="bi bi-graph-up me-1"></i>Progress: ${office}/10 offices (${Math.round(docProgress)}%)</span>
+                            </div>
+                        </div>
+                        <div class="status-badge ${status === 'completed' ? 'status-completed' : 'status-office'}">
+                            ${status === 'completed' ? 'Completed' : 'At ' + officeName}
+                        </div>
+                    `;
+                    trackingList.appendChild(trackingDoc);
+                });
+
+                // Update overall progress circle
+                const overallPercentage = this.selectedDocuments.size > 0 ? 
+                    Math.round(totalProgress / this.selectedDocuments.size) : 0;
+                const degrees = (overallPercentage / 100) * 360;
+                
+                document.getElementById('tracker-progress-circle').style.background = 
+                    `conic-gradient(#10b981 0deg ${degrees}deg, #e5e7eb ${degrees}deg 360deg)`;
+                progressText.textContent = `${overallPercentage}%`;
+                progressDesc.textContent = `${completedDocs} of ${this.selectedDocuments.size} documents completed (${overallPercentage}% average progress)`;
+
+                // Update office progress grid
+                const officeProgressData = this.calculateOfficeProgress(Array.from(this.selectedDocuments));
+                officeGrid.innerHTML = '';
+                
+                for (let i = 0; i < 10; i++) {
+                    const percentage = officeProgressData[i];
+                    const officeDegrees = (percentage / 100) * 360;
+                    
+                    const officeCard = document.createElement('div');
+                    officeCard.className = 'col-lg-3 col-md-4 col-sm-6';
+                    officeCard.innerHTML = `
+                        <div class="office-card">
+                            <div class="progress-circle mx-auto mb-3" style="background: conic-gradient(#10b981 0deg ${officeDegrees}deg, #e5e7eb ${officeDegrees}deg 360deg);">
+                                <div class="progress-text">${percentage}%</div>
+                            </div>
+                            <h6 class="fw-bold">Office ${i + 1}</h6>
+                            <small class="text-muted">${this.officeNames[i]}</small>
+                        </div>
+                    `;
+                    officeGrid.appendChild(officeCard);
+                }
+            }
+
+            backToManagement() {
+                document.getElementById('tracker-interface').style.display = 'none';
+                document.getElementById('management-interface').style.display = 'block';
+            }
+
+            downloadSelected() {
+                const downloadBtn = document.getElementById('bulk-download-btn');
+                downloadBtn.classList.add('loading');
+                downloadBtn.innerHTML = '<span class="spinner me-2"></span>Downloading...';
+                
+                setTimeout(() => {
+                    this.showToast(`Successfully downloaded ${this.selectedDocuments.size} documents!`, 'success');
+                    downloadBtn.classList.remove('loading');
+                    downloadBtn.innerHTML = '<i class="bi bi-download me-2"></i>Download All';
+                }, 2000);
+            }
+
+            refreshTracking() {
+                const refreshBtn = document.getElementById('refresh-tracking-btn');
+                refreshBtn.classList.add('loading');
+                refreshBtn.innerHTML = '<span class="spinner me-2"></span>Refreshing...';
+                
+                setTimeout(() => {
+                    this.simulateProgressUpdates();
+                    this.calculateInitialProgress();
+                    this.updateTrackerInterface();
+                    
+                    this.showToast('Tracking status refreshed for all documents!', 'success');
+                    refreshBtn.classList.remove('loading');
+                    refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise me-2"></i>Refresh All Status';
+                }, 2000);
+            }
+
+            simulateProgressUpdates() {
+                const documents = document.querySelectorAll('.document-item[data-status="in-progress"], .document-item[data-status="pending"]');
+                
+                documents.forEach((doc, index) => {
+                    if (Math.random() > 0.7) {
+                        const currentOffice = parseInt(doc.dataset.office) || 1;
+                        const newOffice = Math.min(currentOffice + 1, 10);
+                        
+                        doc.dataset.office = newOffice;
+                        doc.dataset.officeName = this.officeNames[newOffice - 1];
+                        
+                        const statusBadge = doc.querySelector('.status-badge');
+                        const progressSpan = doc.querySelector('.document-meta span:last-child');
+                        
+                        if (newOffice === 10) {
+                            doc.dataset.status = 'completed';
+                            statusBadge.textContent = 'Completed';
+                            statusBadge.className = 'status-badge status-completed';
+                            progressSpan.innerHTML = '<i class="bi bi-check-circle me-1"></i>Completed (100%)';
+                        } else {
+                            statusBadge.textContent = `At ${this.officeNames[newOffice - 1]}`;
+                            const percentage = Math.round((newOffice / 10) * 100);
+                            progressSpan.innerHTML = `<i class="bi bi-arrow-repeat me-1"></i>Progress: ${newOffice}/10 offices (${percentage}%)`;
+                        }
+                    }
+                });
+            }
+
+            exportTrackingReport() {
+                const exportBtn = document.getElementById('export-tracking-btn');
+                exportBtn.classList.add('loading');
+                exportBtn.innerHTML = '<span class="spinner me-2"></span>Generating...';
+                
+                setTimeout(() => {
+                    const reportData = `Document Tracking Report - Version 6.0\n` +
+                                     `Generated: ${new Date().toLocaleString()}\n` +
+                                     `Documents Tracked: ${this.selectedDocuments.size}\n` +
+                                     `Events: ${this.selectedEvents.size}\n\n` +
+                                     `Detailed Progress Report:\n` +
+                                     `========================\n`;
+                    
+                    const blob = new Blob([reportData], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'tracking-report-v6.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    
+                    this.showToast('Tracking report exported successfully!', 'success');
+                    exportBtn.classList.remove('loading');
+                    exportBtn.innerHTML = '<i class="bi bi-download me-2"></i>Export Report';
+                }, 1500);
+            }
+
+            showToast(message, type = 'info') {
+                // Create toast notification
+                const toastContainer = document.getElementById('toast-container') || this.createToastContainer();
+                
+                const toast = document.createElement('div');
+                toast.className = `alert alert-${type === 'success' ? 'success' : type === 'error' ? 'danger' : 'info'} alert-dismissible fade show`;
+                toast.innerHTML = `
+                    <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                
+                toastContainer.appendChild(toast);
+                
+                // Auto remove after 3 seconds
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 3000);
+            }
+
+            createToastContainer() {
+                const container = document.createElement('div');
+                container.id = 'toast-container';
+                container.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 350px;';
+                document.body.appendChild(container);
+                return container;
+            }
+        }
+
+        // Global functions
+        function toggleEventFolder(header) {
+            const folder = header.closest('.event-folder');
+            const documentsList = folder.querySelector('.documents-list');
+            const expandBtn = folder.querySelector('.expand-btn i');
+            
+            documentsList.classList.toggle('expanded');
+            
+            if (documentsList.classList.contains('expanded')) {
+                documentsList.style.display = 'block';
+                expandBtn.style.transform = 'rotate(180deg)';
+            } else {
+                documentsList.style.display = 'none';
+                expandBtn.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Initialize the enhanced document manager
+        const documentManager = new DocumentManagerV6();
+
+        // Add enhanced interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add ripple effect to buttons
+            document.querySelectorAll('.btn-enhanced').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.style.overflow = 'hidden';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 600);
+                });
+            });
+        });
+
+        // Add CSS animation for ripple effect
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="card login-card">
+            <div class="card-body p-0">
+                <div class="login-header">
+                    <div class="login-icon">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    <h2>University Dashboard</h2>
+                    <p>Event Management System</p>
+                </div>
+                
+                <div class="form-container">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginType" class="form-label fw-semibold">
+                                <i class="bi bi-person-badge me-2"></i>Login As
+                            </label>
+                            <div class="d-flex gap-2 mb-2">
+                                <button type="button" class="btn btn-outline-primary flex-fill" id="employeeBtn" onclick="selectLoginType('employee')">
+                                    <i class="bi bi-briefcase me-2"></i>Employee
+                                </button>
+                                <button type="button" class="btn btn-outline-success flex-fill" id="studentBtn" onclick="selectLoginType('student')">
+                                    <i class="bi bi-mortarboard me-2"></i>Student
+                                </button>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-danger w-100" id="adminBtn" onclick="selectLoginType('admin')">
+                                    <i class="bi bi-shield-lock me-2"></i>Administrator
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="userId" class="form-label fw-semibold">
+                                <i class="bi bi-person me-2"></i>User ID
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="userId" placeholder="Enter your ID" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label fw-semibold">
+                                <i class="bi bi-lock me-2"></i>Password
+                            </label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control form-control-lg pe-5" id="password" placeholder="Enter your password" required>
+                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" id="togglePassword" style="border: none; background: none; color: #6c757d; z-index: 10;">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Error Message Display -->
+                        <div id="loginError" class="alert alert-danger d-none mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span id="loginErrorMessage"></span>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100 btn-lg mb-3" id="loginButton" disabled>
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Select Login Type First
+                        </button>
+                        
+                        <div class="text-center">
+                            <button type="button" class="btn btn-link text-decoration-none" onclick="openForgotPassword()">
+                                <i class="bi bi-question-circle me-1"></i>Forgot Password?
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="demo-accounts">
+                        <h6><i class="bi bi-info-circle me-2"></i>Account Information</h6>
+                        
+                        <div class="demo-account-item">
+                            <div>
+                                <div class="fw-semibold text-dark">
+                                    <i class="bi bi-shield-lock text-danger me-2"></i>Administrator Access
+                                </div>
+                                <small class="text-muted">ID: ADM001 | Password: admin123</small>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-account-item">
+                            <div>
+                                <div class="fw-semibold text-dark">
+                                    <i class="bi bi-briefcase text-primary me-2"></i>Employee Access
+                                </div>
+                                <small class="text-muted">ID: EMP001 | Password: admin123</small>
+                            </div>
+                        </div>
+                        
+                        <div class="demo-account-item">
+                            <div>
+                                <div class="fw-semibold text-dark">
+                                    <i class="bi bi-mortarboard text-success me-2"></i>Student Access
+                                </div>
+                                <small class="text-muted">ID: STU001 | Password: student123</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Screen -->
+    <div id="adminScreen" style="display: none;">
+        <div class="container-fluid py-4">
+            <!-- Admin Header -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="dashboard-header-mini">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-info">
+                                    <i class="bi bi-shield-lock me-1 text-danger"></i>
+                                    <span id="adminDisplayName"></span>
+                                    <span class="badge bg-danger text-white ms-1">ADMIN</span>
+                                </div>
+                                <h4 class="dashboard-title-mini mb-0">
+                                    <i class="bi bi-people-fill me-1"></i>User Management System
+                                </h4>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="dashboard-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="totalUsers">0</span>
+                                        <span class="stat-label">Total Users</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="totalEmployees">0</span>
+                                        <span class="stat-label">Employees</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="totalStudents">0</span>
+                                        <span class="stat-label">Students</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-light btn-sm" onclick="logout()" style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #dc3545; font-weight: 600; padding: 0.375rem 0.75rem; border-radius: 6px; transition: all 0.3s ease;">
+                                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Navigation Tabs -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="navigation-menu">
+                        <ul class="nav nav-pills nav-fill" id="adminTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="users-tab" data-bs-toggle="pill" data-bs-target="#users-panel" type="button" role="tab">
+                                    <i class="bi bi-people-fill me-2"></i>User Management
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="materials-tab" data-bs-toggle="pill" data-bs-target="#materials-panel" type="button" role="tab">
+                                    <i class="bi bi-images me-2"></i>Public Materials
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="audit-tab" data-bs-toggle="pill" data-bs-target="#audit-panel" type="button" role="tab">
+                                    <i class="bi bi-clipboard-data me-2"></i>Audit Log
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Tab Content -->
+            <div class="tab-content" id="adminTabContent">
+                <!-- User Management Panel -->
+                <div class="tab-pane fade show active" id="users-panel" role="tabpanel">
+                    <!-- Admin Controls -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="navigation-menu">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="nav-menu-items">
+                                        <button class="btn btn-success" onclick="openAddUserModal()">
+                                            <i class="bi bi-person-plus me-2"></i>Add New User
+                                        </button>
+                                        <button class="btn btn-info" onclick="refreshUserList()">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                                        </button>
+                                        <button class="btn btn-warning" onclick="exportUsers()">
+                                            <i class="bi bi-download me-2"></i>Export Users
+                                        </button>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select" id="userRoleFilter" onchange="filterUsers()">
+                                            <option value="all">All Users</option>
+                                            <option value="admin">Administrators</option>
+                                            <option value="employee">Employees</option>
+                                            <option value="student">Students</option>
+                                        </select>
+                                        <input type="text" class="form-control" id="userSearchInput" placeholder="Search users..." onkeyup="searchUsers()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users Table -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="calendar-container">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>User ID</th>
+                                                <th>Name</th>
+                                                <th>Role</th>
+                                                <th>Department/Office</th>
+                                                <th>Position</th>
+                                                <th>Email</th>
+                                                <th>Phone</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersTableBody">
+                                            <!-- Users will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Public Materials Panel -->
+                <div class="tab-pane fade" id="materials-panel" role="tabpanel">
+                    <!-- Materials Controls -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="navigation-menu">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="nav-menu-items">
+                                        <button class="btn btn-info" onclick="refreshMaterialsList()">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                                        </button>
+                                        <button class="btn btn-warning" onclick="exportMaterials()">
+                                            <i class="bi bi-download me-2"></i>Export List
+                                        </button>
+                                        <button class="btn btn-danger" onclick="bulkDeleteMaterials()">
+                                            <i class="bi bi-trash me-2"></i>Bulk Delete
+                                        </button>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select" id="materialStatusFilter" onchange="filterMaterials()">
+                                            <option value="all">All Status</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                        <select class="form-select" id="materialTypeFilter" onchange="filterMaterials()">
+                                            <option value="all">All Types</option>
+                                            <option value="image/png">PNG Images</option>
+                                            <option value="image/jpeg">JPEG Images</option>
+                                        </select>
+                                        <input type="text" class="form-control" id="materialSearchInput" placeholder="Search materials..." onkeyup="searchMaterials()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Materials Table -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="calendar-container">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>
+                                                    <input type="checkbox" id="selectAllMaterials" onchange="toggleSelectAllMaterials()">
+                                                </th>
+                                                <th>Material ID</th>
+                                                <th>File Name</th>
+                                                <th>Type</th>
+                                                <th>Size</th>
+                                                <th>Submitted By</th>
+                                                <th>Department</th>
+                                                <th>Status</th>
+                                                <th>Submission Date</th>
+                                                <th>Downloads</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="materialsTableBody">
+                                            <!-- Materials will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audit Log Panel -->
+                <div class="tab-pane fade" id="audit-panel" role="tabpanel">
+                    <!-- Audit Controls -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="navigation-menu">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="nav-menu-items">
+                                        <button class="btn btn-info" onclick="refreshAuditLog()">
+                                            <i class="bi bi-arrow-clockwise me-2"></i>Refresh
+                                        </button>
+                                        <button class="btn btn-warning" onclick="exportAuditLog()">
+                                            <i class="bi bi-download me-2"></i>Export Log
+                                        </button>
+                                        <button class="btn btn-danger" onclick="clearAuditLog()">
+                                            <i class="bi bi-trash me-2"></i>Clear Log
+                                        </button>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select" id="auditCategoryFilter" onchange="filterAuditLog()">
+                                            <option value="all">All Categories</option>
+                                            <option value="Authentication">Authentication</option>
+                                            <option value="User Management">User Management</option>
+                                            <option value="Event Management">Event Management</option>
+                                            <option value="Public Materials">Public Materials</option>
+                                            <option value="Security">Security</option>
+                                            <option value="System">System</option>
+                                        </select>
+                                        <select class="form-select" id="auditSeverityFilter" onchange="filterAuditLog()">
+                                            <option value="all">All Severity</option>
+                                            <option value="INFO">Info</option>
+                                            <option value="WARNING">Warning</option>
+                                            <option value="ERROR">Error</option>
+                                            <option value="CRITICAL">Critical</option>
+                                        </select>
+                                        <input type="text" class="form-control" id="auditSearchInput" placeholder="Search audit log..." onkeyup="searchAuditLog()">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audit Log Table -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="calendar-container">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>User</th>
+                                                <th>Action</th>
+                                                <th>Category</th>
+                                                <th>Details</th>
+                                                <th>Severity</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="auditLogTableBody">
+                                            <!-- Audit entries will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" style="display: none;">
+        <div class="container-fluid py-4">
+            <!-- Dashboard Header -->
+            <div class="row mb-2">
+                <div class="col-12">
+                    <div class="dashboard-header-mini">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-info">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    <span id="userDisplayName"></span>
+                                    <span class="badge bg-light text-dark ms-1" id="userRole"></span>
+                                </div>
+                                <h4 class="dashboard-title-mini mb-0">
+                                    <i class="bi bi-calendar-event me-1"></i>Event Schedule
+                                </h4>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="dashboard-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="totalEvents">0</span>
+                                        <span class="stat-label">Total</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number" id="thisMonthEvents">0</span>
+                                        <span class="stat-label">This Month</span>
+                                    </div>
+                                </div>
+                                <button class="btn btn-outline-light btn-sm" onclick="logout()" style="border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: #3b82f6; font-weight: 600; padding: 0.375rem 0.75rem; border-radius: 6px; transition: all 0.3s ease;">
+                                    <i class="bi bi-box-arrow-right me-1"></i>Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student View Notice Modal -->
+            <div class="modal fade" id="studentNoticeModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header bg-info bg-opacity-10 border-info">
+                            <h5 class="modal-title text-info">
+                                <i class="bi bi-info-circle me-2"></i>Student View Mode
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-mortarboard text-success me-3" style="font-size: 2rem;"></i>
+                                <div>
+                                    <p class="mb-3">Welcome to the University Event Calendar! As a student, you have <strong>view-only access</strong> to the event calendar.</p>
+                                    <div class="mb-3">
+                                        <strong>What you can do:</strong>
+                                        <ul class="mt-2">
+                                            <li>Browse all university events posted by administrators</li>
+                                            <li>Click on any event to view detailed information</li>
+                                            <li>Navigate between months to see upcoming events</li>
+                                        </ul>
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>What you cannot do:</strong>
+                                        <ul class="mt-2 text-muted">
+                                            <li>Create, edit, or delete events</li>
+                                            <li>Access administrative functions</li>
+                                            <li>Submit documents or materials</li>
+                                        </ul>
+                                    </div>
+                                    <p class="mb-0 text-muted">
+                                        <i class="bi bi-envelope me-2"></i>
+                                        For event modifications or administrative requests, please contact your administrator.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                                <i class="bi bi-check-circle me-2"></i>Got it!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Menu (for all users) -->
+            <div class="row mb-3" id="navigationMenu" style="display: none;">
+                <div class="col-12">
+                    <div class="navigation-menu">
+                        <div class="nav-menu-items">
+                            <a href="#" class="nav-menu-btn" onclick="createDocument()">
+                                <i class="bi bi-file-earmark-plus"></i>
+                                <span>Create Document</span>
+                            </a>
+                            <a href="#" class="nav-menu-btn" onclick="submitPubmat()">
+                                <i class="bi bi-image"></i>
+                                <span>Submit Pubmat</span>
+                            </a>
+                            <a href="#" class="nav-menu-btn" onclick="trackDocuments()">
+                                <i class="bi bi-list-check"></i>
+                                <span>Track Documents</span>
+                            </a>
+                            <a href="#" class="nav-menu-btn" onclick="showNotifications()">
+                                <i class="bi bi-bell"></i>
+                                <span>Notifications</span>
+                            </a>
+                            <div class="dropdown">
+                                <a href="#" class="nav-menu-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-gear"></i>
+                                    <span>Settings</span>
+                                    <i class="bi bi-chevron-down" style="font-size: 0.7rem; margin-top: 2px;"></i>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="openChangePassword()">
+                                        <i class="bi bi-key me-2"></i>Change Password
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="openProfileSettings()">
+                                        <i class="bi bi-person-gear me-2"></i>Profile
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Controls -->
+            <div class="row mb-3" id="calendarControlsRow">
+                <div class="col-12">
+                    <div class="calendar-controls">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <button onclick="previousMonth()" class="btn btn-outline-primary">
+                                <i class="bi bi-chevron-left"></i>
+                                <span class="d-sm-inline ms-1">Previous</span>
+                            </button>
+                            
+                            <div class="current-month-display">
+                                <h3 id="currentMonth" class="mb-1"></h3>
+                                <div class="month-indicator"></div>
+                            </div>
+                            
+                            <button onclick="nextMonth()" class="btn btn-outline-primary">
+                                <span class="d-sm-inline me-1">Next</span>
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="row" id="calendarGridRow">
+                <div class="col-12">
+                    <div class="calendar-container">
+                        <!-- Days of week header -->
+                        <div class="calendar-header">
+                            <div class="calendar-day-header">Sunday</div>
+                            <div class="calendar-day-header">Monday</div>
+                            <div class="calendar-day-header">Tuesday</div>
+                            <div class="calendar-day-header">Wednesday</div>
+                            <div class="calendar-day-header">Thursday</div>
+                            <div class="calendar-day-header">Friday</div>
+                            <div class="calendar-day-header">Saturday</div>
+                        </div>
+                        <!-- Calendar days -->
+                        <div id="calendarGrid" class="calendar-grid">
+                            <!-- Calendar days will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Modal (for employees only) -->
+    <div class="modal fade" id="eventModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="eventModalLabel">Add New Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="eventForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="eventTitle" class="form-label">Event Title</label>
+                            <input type="text" class="form-control" id="eventTitle" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDate" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="eventDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventTime" class="form-label">Time</label>
+                            <input type="time" class="form-control" id="eventTime">
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="eventColor" class="form-label">Department/College</label>
+                            <select class="form-select" id="eventColor">
+                                <option value="bg-primary">College of Engineering</option>
+                                <option value="bg-success">College of Nursing</option>
+                                <option value="bg-danger">College of Business</option>
+                                <option value="bg-warning">College of Criminology</option>
+                                <option value="bg-info">College of Computing and Information Sciences</option>
+                                <option value="bg-secondary">College of Art and Social Sciences and Education</option>
+                                <option value="bg-dark">Colleges of Hospitality and Tourism Management</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="deleteBtn" onclick="deleteEvent()" class="btn btn-danger d-none">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                        <button type="submit" class="btn btn-primary">Save Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning bg-opacity-10 border-warning">
+                    <h5 class="modal-title text-warning">
+                        <i class="bi bi-key me-2"></i>Password Recovery
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Step 1: User ID Input -->
+                    <div id="forgotPasswordStep1">
+                        <div class="text-center mb-4">
+                            <div class="bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-shield-lock text-warning" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6 class="mt-3 mb-2">Forgot Your Password?</h6>
+                            <p class="text-muted small">Enter your User ID to begin the password recovery process</p>
+                        </div>
+                        
+                        <form id="forgotPasswordForm">
+                            <div class="mb-3">
+                                <label for="forgotUserId" class="form-label">User ID</label>
+                                <input type="text" class="form-control" id="forgotUserId" placeholder="Enter your User ID" required>
+                            </div>
+                            
+                            <div id="forgotPasswordError" class="alert alert-danger d-none mb-3" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <span id="forgotPasswordErrorMessage"></span>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="bi bi-search me-2"></i>Find Account
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Step 2: MFA Code Verification -->
+                    <div id="forgotPasswordStep2" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-shield-lock text-info" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6 class="mt-3 mb-2">Multi-Factor Authentication</h6>
+                            <p class="text-muted small">We've sent a 6-digit verification code to your registered contact</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="bg-light rounded p-3 text-center">
+                                <div class="mb-2">
+                                    <i class="bi bi-envelope text-primary me-2"></i>
+                                    <strong>Email:</strong> <span id="maskedEmail"></span>
+                                </div>
+                                <div>
+                                    <i class="bi bi-phone text-success me-2"></i>
+                                    <strong>SMS:</strong> <span id="maskedPhone"></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form id="mfaVerificationForm">
+                            <div class="mb-3">
+                                <label for="mfaCode" class="form-label">Enter 6-Digit Verification Code</label>
+                                <input type="text" class="form-control text-center" id="mfaCode" placeholder="000000" maxlength="6" pattern="[0-9]{6}" required style="font-size: 1.5rem; letter-spacing: 0.5rem; font-weight: bold;">
+                                <div class="form-text">Code expires in <span id="codeTimer">5:00</span></div>
+                            </div>
+                            
+                            <div id="mfaError" class="alert alert-danger d-none mb-3" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <span id="mfaErrorMessage"></span>
+                            </div>
+                            
+                            <div class="mb-3 text-center">
+                                <button type="button" class="btn btn-link text-decoration-none" id="resendCodeBtn" onclick="resendMfaCode()">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>Resend Code
+                                </button>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-secondary" onclick="backToStep1()">
+                                    <i class="bi bi-arrow-left me-2"></i>Back
+                                </button>
+                                <button type="submit" class="btn btn-info flex-fill">
+                                    <i class="bi bi-check-circle me-2"></i>Verify Code
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Step 3: Reset Password -->
+                    <div id="forgotPasswordStep3" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <i class="bi bi-shield-check text-success" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6 class="mt-3 mb-2">Reset Your Password</h6>
+                            <p class="text-muted small">Create a new secure password for your account</p>
+                        </div>
+                        
+                        <form id="resetPasswordForm">
+                            <div class="mb-3">
+                                <label for="newPasswordReset" class="form-label">New Password</label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control" id="newPasswordReset" required minlength="6">
+                                    <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePasswordVisibility('newPasswordReset')" style="border: none; background: none; color: #6c757d; z-index: 10;">
+                                        <i class="bi bi-eye" id="newPasswordResetIcon"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text">Password must be at least 6 characters long</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="confirmPasswordReset" class="form-label">Confirm New Password</label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control" id="confirmPasswordReset" required>
+                                    <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePasswordVisibility('confirmPasswordReset')" style="border: none; background: none; color: #6c757d; z-index: 10;">
+                                        <i class="bi bi-eye" id="confirmPasswordResetIcon"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div id="resetPasswordError" class="alert alert-danger d-none mb-3" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>
+                                <span id="resetPasswordErrorMessage"></span>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-secondary" onclick="backToStep2()">
+                                    <i class="bi bi-arrow-left me-2"></i>Back
+                                </button>
+                                <button type="submit" class="btn btn-success flex-fill">
+                                    <i class="bi bi-check-lg me-2"></i>Reset Password
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Step 4: Success -->
+                    <div id="forgotPasswordStep4" style="display: none;">
+                        <div class="text-center">
+                            <div class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 100px; height: 100px;">
+                                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                            </div>
+                            <h5 class="text-success mb-3">Password Reset Successful!</h5>
+                            <p class="text-muted mb-4">Your password has been successfully updated. You can now log in with your new password.</p>
+                            <button type="button" class="btn btn-success" onclick="closeForgotPasswordModal()">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Return to Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Add New User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="userForm">
+                    <div class="modal-body">
+                        <!-- Role Selection -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">User Type</label>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-danger flex-fill" id="adminRoleBtn" onclick="selectUserRole('admin')">
+                                    <i class="bi bi-shield-lock me-2"></i>Administrator
+                                </button>
+                                <button type="button" class="btn btn-outline-primary flex-fill" id="employeeRoleBtn" onclick="selectUserRole('employee')">
+                                    <i class="bi bi-briefcase me-2"></i>Employee
+                                </button>
+                                <button type="button" class="btn btn-outline-success flex-fill" id="studentRoleBtn" onclick="selectUserRole('student')">
+                                    <i class="bi bi-mortarboard me-2"></i>Student
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Basic Information -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="userIdInput" class="form-label">User ID</label>
+                                    <input type="text" class="form-control" id="userIdInput" required>
+                                    <div class="form-text">Format: ADM001, EMP001, STU001</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="passwordNotice" class="alert alert-info mb-3" style="display: none;">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Password Security:</strong> For security reasons, administrators cannot view or edit user passwords. Users must change their own passwords through the system settings.
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userFirstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="userFirstName" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userLastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="userLastName" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Role-specific fields -->
+                        <div id="employeeFields" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="userOffice" class="form-label">Office</label>
+                                        <select class="form-select" id="userOffice">
+                                            <option value="">Select Office</option>
+                                            <option value="Administration Office">Administration Office</option>
+                                            <option value="Academic Affairs">Academic Affairs</option>
+                                            <option value="Student Affairs">Student Affairs</option>
+                                            <option value="Finance Office">Finance Office</option>
+                                            <option value="HR Department">HR Department</option>
+                                            <option value="IT Department">IT Department</option>
+                                            <option value="Library">Library</option>
+                                            <option value="Registrar">Registrar</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="userEmployeePosition" class="form-label">Employee Position</label>
+                                        <select class="form-select" id="userEmployeePosition">
+                                            <option value="">Select Position</option>
+                                            <option value="President">President</option>
+                                            <option value="Vice President">Vice President</option>
+                                            <option value="Dean">Dean</option>
+                                            <option value="Associate Dean">Associate Dean</option>
+                                            <option value="Department Head">Department Head</option>
+                                            <option value="Professor">Professor</option>
+                                            <option value="Associate Professor">Associate Professor</option>
+                                            <option value="Assistant Professor">Assistant Professor</option>
+                                            <option value="Instructor">Instructor</option>
+                                            <option value="Administrative Staff">Administrative Staff</option>
+                                            <option value="System Administrator">System Administrator</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="studentFields" style="display: none;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="userDepartment" class="form-label">Department/College</label>
+                                        <select class="form-select" id="userDepartment">
+                                            <option value="">Select Department</option>
+                                            <option value="College of Engineering">College of Engineering</option>
+                                            <option value="College of Nursing">College of Nursing</option>
+                                            <option value="College of Business">College of Business</option>
+                                            <option value="College of Criminology">College of Criminology</option>
+                                            <option value="College of Computing and Information Sciences">College of Computing and Information Sciences</option>
+                                            <option value="College of Art and Social Sciences and Education">College of Art and Social Sciences and Education</option>
+                                            <option value="Colleges of Hospitality and Tourism Management">Colleges of Hospitality and Tourism Management</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="userStudentPosition" class="form-label">Student Body Position</label>
+                                        <select class="form-select" id="userStudentPosition">
+                                            <option value="">Select Position (Optional)</option>
+                                            <option value="Student Council President">Student Council President</option>
+                                            <option value="Student Council Vice President">Student Council Vice President</option>
+                                            <option value="Student Council Secretary">Student Council Secretary</option>
+                                            <option value="Student Council Treasurer">Student Council Treasurer</option>
+                                            <option value="Class President">Class President</option>
+                                            <option value="Class Vice President">Class Vice President</option>
+                                            <option value="Class Secretary">Class Secretary</option>
+                                            <option value="Class Treasurer">Class Treasurer</option>
+                                            <option value="Club President">Club President</option>
+                                            <option value="Club Officer">Club Officer</option>
+                                            <option value="Regular Student">Regular Student</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userEmail" class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" id="userEmail" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="userPhone" class="form-label">Contact Number</label>
+                                    <input type="tel" class="form-control" id="userPhone" placeholder="+63 917 123 4567" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error/Success Messages -->
+                        <div id="userFormError" class="alert alert-danger d-none mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span id="userFormErrorMessage"></span>
+                        </div>
+                        
+                        <div id="userFormSuccess" class="alert alert-success d-none mb-3" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <span id="userFormSuccessMessage"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="deleteUserBtn" onclick="deleteUser()" class="btn btn-danger d-none">
+                            <i class="bi bi-trash"></i> Delete User
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Save User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger bg-opacity-10 border-danger">
+                    <h5 class="modal-title text-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-person-x text-danger" style="font-size: 2rem;"></i>
+                        </div>
+                        <h6 class="mb-3">Are you sure you want to delete this user?</h6>
+                        <div class="bg-light rounded p-3 mb-3">
+                            <div><strong>User ID:</strong> <span id="deleteUserId"></span></div>
+                            <div><strong>Name:</strong> <span id="deleteUserName"></span></div>
+                            <div><strong>Role:</strong> <span id="deleteUserRole"></span></div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            This action cannot be undone. All user data will be permanently removed.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmDeleteUser()">
+                        <i class="bi bi-trash me-2"></i>Delete User
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Detail Modal -->
+    <div class="modal fade" id="materialDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-image me-2"></i>Material Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Material ID</label>
+                                <div class="form-control-plaintext" id="materialDetailId">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">File Name</label>
+                                <div class="form-control-plaintext" id="materialDetailFileName">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">File Type</label>
+                                <div class="form-control-plaintext" id="materialDetailFileType">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">File Size</label>
+                                <div class="form-control-plaintext" id="materialDetailFileSize">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Submitted By</label>
+                                <div class="form-control-plaintext" id="materialDetailSubmitter">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Department</label>
+                                <div class="form-control-plaintext" id="materialDetailDepartment">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Submission Date</label>
+                                <div class="form-control-plaintext" id="materialDetailSubmissionDate">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Status</label>
+                                <div class="form-control-plaintext" id="materialDetailStatus">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Description</label>
+                        <div class="form-control-plaintext" id="materialDetailDescription">-</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Download Count</label>
+                                <div class="form-control-plaintext" id="materialDetailDownloadCount">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Last Downloaded</label>
+                                <div class="form-control-plaintext" id="materialDetailLastDownloaded">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="materialApprovalInfo" style="display: none;">
+                        <hr>
+                        <h6>Approval Information</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Approved By</label>
+                                    <div class="form-control-plaintext" id="materialDetailApprovedBy">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Approval Date</label>
+                                    <div class="form-control-plaintext" id="materialDetailApprovalDate">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="materialRejectionInfo" style="display: none;">
+                        <hr>
+                        <h6>Rejection Information</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Rejected By</label>
+                                    <div class="form-control-plaintext" id="materialDetailRejectedBy">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Rejection Date</label>
+                                    <div class="form-control-plaintext" id="materialDetailRejectionDate">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Rejection Reason</label>
+                            <div class="form-control-plaintext" id="materialDetailRejectionReason">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" id="deleteMaterialBtn" onclick="deleteSingleMaterial()">
+                        <i class="bi bi-trash me-2"></i>Delete Material
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bulk Delete Materials Modal -->
+    <div class="modal fade" id="bulkDeleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger bg-opacity-10 border-danger">
+                    <h5 class="modal-title text-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Bulk Delete Materials
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <div class="bg-danger bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                            <i class="bi bi-images text-danger" style="font-size: 2rem;"></i>
+                        </div>
+                        <h6 class="mb-3">Are you sure you want to delete the selected materials?</h6>
+                        <div class="bg-light rounded p-3 mb-3">
+                            <div><strong>Selected Materials:</strong> <span id="bulkDeleteCount">0</span></div>
+                        </div>
+                        <p class="text-muted small mb-0">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            This action cannot be undone. All selected materials will be permanently removed.
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmBulkDelete()">
+                        <i class="bi bi-trash me-2"></i>Delete Selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audit Detail Modal -->
+    <div class="modal fade" id="auditDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-clipboard-data me-2"></i>Audit Log Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Audit ID</label>
+                                <div class="form-control-plaintext" id="auditDetailId">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Timestamp</label>
+                                <div class="form-control-plaintext" id="auditDetailTimestamp">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">User</label>
+                                <div class="form-control-plaintext" id="auditDetailUser">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Action</label>
+                                <div class="form-control-plaintext" id="auditDetailAction">-</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Category</label>
+                                <div class="form-control-plaintext" id="auditDetailCategory">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Severity</label>
+                                <div class="form-control-plaintext" id="auditDetailSeverity">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">IP Address</label>
+                                <div class="form-control-plaintext" id="auditDetailIpAddress">-</div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Target</label>
+                                <div class="form-control-plaintext" id="auditDetailTarget">-</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Details</label>
+                        <div class="form-control-plaintext" id="auditDetailDetails">-</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">User Agent</label>
+                        <div class="form-control-plaintext text-break" id="auditDetailUserAgent">-</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="bi bi-key me-2"></i>Change Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="changePasswordForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Current Password</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" id="currentPassword" required>
+                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePasswordVisibility('currentPassword')" style="border: none; background: none; color: #6c757d; z-index: 10;">
+                                    <i class="bi bi-eye" id="currentPasswordIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" id="newPassword" required minlength="6">
+                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePasswordVisibility('newPassword')" style="border: none; background: none; color: #6c757d; z-index: 10;">
+                                    <i class="bi bi-eye" id="newPasswordIcon"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">Password must be at least 6 characters long</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                            <div class="position-relative">
+                                <input type="password" class="form-control" id="confirmPassword" required>
+                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePasswordVisibility('confirmPassword')" style="border: none; background: none; color: #6c757d; z-index: 10;">
+                                    <i class="bi bi-eye" id="confirmPasswordIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Password Change Error/Success Messages -->
+                        <div id="passwordChangeError" class="alert alert-danger d-none mb-3" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <span id="passwordChangeErrorMessage"></span>
+                        </div>
+                        
+                        <div id="passwordChangeSuccess" class="alert alert-success d-none mb-3" role="alert">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <span id="passwordChangeSuccessMessage"></span>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-2"></i>Change Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event View Popup (for students) -->
+    <div id="eventViewPopup" class="event-popup">
+        <div class="event-popup-content">
+            <div class="event-popup-header">
+                <h5>
+                    <i class="bi bi-calendar-event"></i> Event Details
+                </h5>
+                <button class="event-popup-close" onclick="closeEventPopup()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="event-popup-body">
+                <div class="event-detail-item">
+                    <div class="event-detail-label">Event Title</div>
+                    <div class="event-detail-value" id="popupEventTitle">-</div>
+                </div>
+                
+                <div class="event-detail-item">
+                    <div class="event-detail-label">Date</div>
+                    <div class="event-detail-value" id="popupEventDate">-</div>
+                </div>
+                
+                <div class="event-detail-item">
+                    <div class="event-detail-label">Time</div>
+                    <div class="event-detail-value" id="popupEventTime">-</div>
+                </div>
+                
+                <div class="event-detail-item">
+                    <div class="event-detail-label">Description</div>
+                    <div class="event-detail-value" id="popupEventDescription">-</div>
+                </div>
+                
+                <div class="event-detail-item">
+                    <div class="event-detail-label">Department/College</div>
+                    <div class="event-detail-value">
+                        <span class="department-badge" id="popupEventDepartment">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
